@@ -1,2 +1,0 @@
-# UtilityClass
-Utility Class
