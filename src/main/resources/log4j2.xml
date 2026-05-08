@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="LOG_PATH">./logs/UtilityClass</Property>
+        <!-- 日志输出格式 -->
+        <Property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${PATTERN}"/>
+        </Console>
+        <!-- 关键配置：RollingFile -->
+        <RollingFile name="HourlyRollingFile" fileName="${LOG_PATH}/app.log"
+                     filePattern="${LOG_PATH}/%d{yyyy/MM/dd}/%d{yyyy-MM-dd_HH}.log">
+            <PatternLayout pattern="${PATTERN}"/>
+            <Policies>
+                <!--
+                     TimeBasedTriggeringPolicy 会根据 filePattern 中最小的时间单位进行切分。
+                     因为我们的格式是 %d{HH}，最小单位是小时，所以它会每小时生成一个新文件。
+                -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <!-- 自动清理配置（可选）：删除超过 30 天的日志 -->
+            <DefaultRolloverStrategy>
+                <Delete basePath="${LOG_PATH}" maxDepth="4">
+                    <IfFileName glob="*/*/*/*.log"/>
+                    <IfLastModified age="30d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="HourlyRollingFile"/>
+        </Root>
+    </Loggers>
+</Configuration>
